@@ -21,39 +21,86 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_taskController.isEdit ? 'Edit Task' : 'Add Task')),
-      body: Obx(() => Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _taskController.formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _taskController.titleCtrl,
-                decoration: const InputDecoration(labelText: 'Title'),
-                validator: (value) => value == null || value.trim().isEmpty ? 'Enter title' : null,
+      appBar: AppBar(
+        title: Text(_taskController.isEdit ? 'Edit Task' : 'Add Task'),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Obx(() => Form(
+              key: _taskController.formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Title Heading
+                  Text(
+                    _taskController.isEdit
+                        ? 'Update your task'
+                        : 'Create a new task',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Please enter the task title and description.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Title Input
+                  TextFormField(
+                    controller: _taskController.titleCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Title',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? 'Enter title'
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Description Input
+                  TextFormField(
+                    controller: _taskController.descCtrl,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                    value == null || value.trim().isEmpty
+                        ? 'Enter description'
+                        : null,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Submit Button
+                  _taskController.isLoading.value
+                      ? const Center(child: CircularProgressIndicator())
+                      : ElevatedButton(
+                    onPressed: () {
+                      _taskController.isEdit
+                          ? _taskController.updateTask()
+                          : _taskController.addTask();
+                    },
+                    child: Text(_taskController.isEdit
+                        ? 'Update Task'
+                        : 'Add Task'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _taskController.descCtrl,
-                decoration: const InputDecoration(labelText: 'Description'),
-                validator: (value) => value == null || value.trim().isEmpty ? 'Enter description' : null,
-              ),
-              const SizedBox(height: 20),
-              _taskController.isLoading.value
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                onPressed: () {
-                  _taskController.isEdit
-                      ? _taskController.updateTask()
-                      : _taskController.addTask();
-                },
-                child: Text(_taskController.isEdit ? 'Update Task' : 'Add Task'),
-              ),
-            ],
+            )),
           ),
         ),
-      )),
+      ),
     );
   }
 }
